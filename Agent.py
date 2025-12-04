@@ -10,7 +10,7 @@ from browser_use import Agent, ChatGoogle, Tools, ActionResult, ChatBrowserUse, 
 import json
 from datetime import datetime
 
-# Add the missing imports for email functionality
+
 import smtplib  # This is for handling the email sending process
 from email.mime.text import MIMEText  # This is for creating email messages
 from email.mime.multipart import MIMEMultipart  # If you want to send multipart emails, like HTML + Text
