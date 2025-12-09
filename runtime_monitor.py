@@ -1,5 +1,3 @@
-
-# runtime_monitor.py
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Dict, Any
@@ -21,7 +19,7 @@ class RuntimeMonitor:
         self.window_seconds = window_seconds
         self.action_timestamps = defaultdict(list)
 
-        # NEW: keep the original user task / prompt
+       
         self.task_text = task_text or ""
         self.file_intent_allowed = self._infer_file_intent(self.task_text)
 
@@ -56,7 +54,6 @@ class RuntimeMonitor:
         return any(kw in text for kw in keywords)
 
     def record_action(self, action_name):
-        print(" ======= HERE IN RECORD ACTION ========= ")
         print(f"Action name: {action_name}")
         now = time.time()
         
@@ -73,9 +70,6 @@ class RuntimeMonitor:
         if len(timestamps) > self.max_repeats:
             self.reload_repeated = True
             return True
-       
-
-    # NEW: specifically for file-access tools like access_downloads
     def record_file_access(self, tool_name: str, details: Dict[str, Any] | None = None) -> bool:
         """
         Return True if this file access is suspicious (e.g. user prompt never asked for it).
@@ -118,8 +112,7 @@ class RuntimeMonitor:
                       f"Streak reset from {self.memory_reload_streak} to 0.")
             self.memory_reload_streak = 0
 
-        # If it’s been mentioned in 3+ consecutive memory updates,
-        # mark reload_attempted = True (what you asked for).
+       
         if self.memory_reload_streak >= 3 and not self.reload_attempted:
             print("[Monitor] 3+ consecutive memory mentions of refresh/reload → reload_attempted = True")
             self.reload_attempted = True
@@ -135,7 +128,7 @@ class RuntimeMonitor:
         """
         lowered = text.lower()
 
-        # You can tune these heuristics
+        
         abort_keywords = [
             "error",
             "prevents me from summarizing",
@@ -156,47 +149,3 @@ class RuntimeMonitor:
                 print("          Memory snippet:", text)
             self.task_abort_attempted = True
 
-
-
-# /////////////////////////////////////////////
-# # runtime_monitor.py
-# from dataclasses import dataclass
-# from datetime import datetime, timedelta
-# from typing import Optional, Dict, Any, List
-
-# import time
-# from collections import defaultdict
-
-
-# @dataclass
-# class AgentEvent:
-#     """Generic log entry for browser-use actions."""
-#     action_type: str
-#     url: Optional[str] = None
-#     details: Dict[str, Any] = None
-#     timestamp: datetime = datetime.utcnow()
-
-# class RuntimeMonitor:
-#     def __init__(self, max_repeats=3, window_seconds=60):
-#         self.max_repeats = max_repeats
-#         self.window_seconds = window_seconds
-#         self.action_timestamps = defaultdict(list)
-
-#     def record_action(self, action_name):
-#         print(" ======= HERE IN RECORD ACTION ========= ")
-#         now = time.time()
-        
-#         # Clean old timestamps
-#         timestamps = [
-#             t for t in self.action_timestamps[action_name]
-#             if now - t < self.window_seconds
-#         ]
-#         timestamps.append(now)
-#         print(f"============ no of timestamps {len(timestamps)}")
-#         self.action_timestamps[action_name] = timestamps
-
-#         # Flag if too many repeated actions
-#         if len(timestamps) > self.max_repeats:
-#             return True  # suspicious
-#         return False
-# ////////////////////////////////////////////
